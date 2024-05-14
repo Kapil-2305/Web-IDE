@@ -35,7 +35,12 @@ ptyProcess.onData(data => {
 });
 io.on('connection', (socket) => {
     console.log('🚀 New client connected', socket.id);
-    
+
+    socket.emit('file:refresh');
+
+    socket.on('file:change', async ({path, content}) => {
+        await fs.writeFile(`./user/${path}`, content);
+    });    
     socket.on('terminal:write', (data)=>{
         ptyProcess.write(data);
     })
@@ -44,6 +49,12 @@ io.on('connection', (socket) => {
 app.get('/files', async (req, res) => {
     const fileTree = await generateFileTree('./user');
     return res.json({tree : fileTree});
+});
+
+app.get('/files/content', async (req, res) => {
+    const { path } = req.query.path;
+    const content = await fs.readFile(`./user/${path}`, 'utf-8');
+    return res.json({content});
 });
 
 server.listen(9000, () => {

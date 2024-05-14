@@ -8,7 +8,7 @@ const FileTreeNode = ({fileName, nodes, onSelect, path}) => {
             onSelect(path);
         }} style={{marginLeft: '10px'}}>
             <p className={isDir ? "" : "file-node"}>{fileName}</p>
-            {nodes && <ul>
+            {nodes && fileName !== 'node_modules' && <ul>
                     {Object.keys(nodes).map(child => (
                         <li key={child}>
                             <FileTreeNode onSelect={onSelect} fileName={child} path={path + '/' + child} nodes={nodes[child]}/>
